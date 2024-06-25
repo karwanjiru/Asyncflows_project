@@ -1,0 +1,223 @@
+# asyncflows-language-server
+
+default_model:
+  model: ollama/llama3
+  api_base: 
+    env: API_BASE_URL
+  auth_token: 
+    env: AUTH_TOKEN
+
+flow:
+
+  personal_info:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          List all the factual information you know about the patient. 
+          What are their names, age, emergency contacts, and contact details? 
+          Identify any gaps in your knowledge and consider how you might obtain this missing information.
+          Be VERY concise. Write as a list.
+
+  medical_history:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Detail patient's past illnesses, surgeries, and immunization records.
+          Are there any allergies or chronic conditions? 
+          Is there a family medical history?
+          Be VERY concise. Couple of sentences at most.
+
+  clinical_notes:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Detail notes from consultations, progress notes, and discharge summaries with the respective dates where applicable.
+          What are the positive developments and successful interventions?
+          Highlight areas of progress and successful treatments.
+          Be VERY concise. Couple of sentences at most.
+
+  diagnosis:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Focus on the emotional and intuitive aspects of the patient’s condition, including the initial and final diagnosis.
+          Is the patient healthy? 
+          How can the patient's health be improved?
+          Be VERY concise. Couple of sentences at most.
+
+  treatment_plans:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Think creatively about the patient's condition. 
+          Brainstorm new ideas and alternative solutions to improve their health. 
+          What medication would better improve the patient's health?
+          Be VERY concise. Couple of sentences at most.
+
+  progress_reports:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Creatively review the patient's vital signs and nursing notes. 
+          Delve into the updates on the patient's condition.
+          What are the improvements and progress?
+          Be VERY concise. Couple of sentences at most.
+
+  consent_forms:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Thoroughly review all signed consent forms for treatment and procedures. 
+          What other forms may be needed for signing to ensure the best patient services?
+          Be VERY concise. Couple of sentences at most.
+
+  adm_info:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Take note of patient's admission and discharge dates, room and bed assignment, and referral and transfer information where applicable.
+          What vital information may be missing, is referral necessary?
+          Be VERY concise. Couple of sentences at most.
+
+  legal_doc:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Thoroughly review any advance directives, living wills, and power of attorney documents where applicable. 
+          What legal documentation is needed?
+          Be VERY concise. Couple of sentences at most.
+
+  bill_info:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Carefully review billing statements and payment records. 
+          Check for any insurance claims and reimbursements.
+          Is the patient eligible for payment or are there pending payments to be made?
+          Be VERY concise. Couple of sentences at most.
+
+  misc:
+    action: prompt
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - text: |
+          Problem:
+          ```
+          {{ query }}
+          ```
+          Creatively review any additional documentation on the patient. 
+          How can care to the patient be improved?
+          Be VERY concise. Couple of sentences at most.
+
+  analysis:
+    action: prompt
+    model:
+      max_output_tokens: 1000
+    prompt:
+      - role: system
+        text: You are a helpful assistant, who is REALLY concise.
+      - role: user
+      - heading: Summary of Patient File
+        var: query
+      - heading: Personal Information
+        link: personal_info.result
+      - heading: Medical History
+        link: medical_history.result
+      - heading: Clinical Notes
+        link: clinical_notes.result
+      - heading: Diagnosis
+        link: diagnosis.result
+      - heading: Treatment Plans
+        link: treatment_plans.result
+      - heading: Progress Reports
+        link: progress_reports.result
+      - heading: Consent Forms
+        link: consent_forms.result
+      - heading: Administrative Information
+        link: adm_info.result
+      - heading: Legal Documentation
+        link: legal_doc.result
+      - heading: Financial Information
+        link: bill_info.result
+      - heading: Miscellaneous
+        link: misc.result
+      - text: |
+          Review and synthesize the information and ideas generated from the other docs. 
+          Assess which ideas are most feasible and effective based on the facts (Personal Information & Medical History), emotions (Diagnosis), risks (Financial Information), benefits (Clinical Notes & Progress Reports), and creative solutions (Treatment Plans & Miscellaneous).
+          How can these insights best help provide ultimate patient care? 
+          Outline a plan with clear steps or actions, indicating areas that need attention. 
+          Consider how you will monitor progress and what criteria you will use to evaluate success.
+
+default_output: analysis.result
